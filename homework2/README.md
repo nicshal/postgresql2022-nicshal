@@ -34,9 +34,13 @@
 
 проинициализируйте диск согласно инструкции и подмонтировать файловую систему, только не забывайте менять имя диска на актуальное, в вашем случае это скорее всего будет /dev/sdb - https://www.digitalocean.com/community/tutorials/how-to-partition-and-format-storage-devices-in-linux
  + выполнено
+
      Filesystem      Size  Used Avail Use% Mounted on
+
      /dev/vda2        15G  3.1G   12G  22% /
+
      /dev/vdb1       4.9G   20M  4.6G   1% /mnt/data
+
 
 сделайте пользователя postgres владельцем /mnt/data - chown -R postgres:postgres /mnt/data/
 
