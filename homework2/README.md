@@ -42,22 +42,32 @@
      /dev/vdb1       4.9G   20M  4.6G   1% /mnt/data
 
 
-сделайте пользователя postgres владельцем /mnt/data - chown -R postgres:postgres /mnt/data/
+сделайте пользователя postgres владельцем /mnt/data - sudo chown -R postgres:postgres /mnt/data/
 
-перенесите содержимое /var/lib/postgres/14 в /mnt/data - mv /var/lib/postgresql/14 /mnt/data
+перенесите содержимое /var/lib/postgres/14 в /mnt/data - sudo mv /var/lib/postgresql/14 /mnt/data
+ + сделал
 
 попытайтесь запустить кластер - sudo -u postgres pg_ctlcluster 14 main start
+ + попытался запустить
 
 напишите получилось или нет и почему
+ + Error: /var/lib/postgresql/14/main is not accessible or does not exist
 
 задание: найти конфигурационный параметр в файлах раположенных в /etc/postgresql/10/main который надо поменять и поменяйте его
+ + параметр data_directory
 
 напишите что и почему поменяли
+ + data_directory = '/mnt/data/14/main'
 
 попытайтесь запустить кластер - sudo -u postgres pg_ctlcluster 14 main start
+ + попытался
 
 напишите получилось или нет и почему
+ + кластер запущен
+
+     14  main    5432 online postgres /mnt/data/14/main /var/log/postgresql/postgresql-14-main.log
 
 зайдите через через psql и проверьте содержимое ранее созданной таблицы
+ + данные обнаружены
 
 задание со звездочкой *: не удаляя существующий GCE инстанс сделайте новый, поставьте на его PostgreSQL, удалите файлы с данными из /var/lib/postgres, перемонтируйте внешний диск который сделали ранее от первой виртуальной машины ко второй и запустите PostgreSQL на второй машине так чтобы он работал с данными на внешнем диске, расскажите как вы это сделали и что в итоге получилось.
