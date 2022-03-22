@@ -54,7 +54,7 @@
  + Error: /var/lib/postgresql/14/main is not accessible or does not exist
 
 задание: найти конфигурационный параметр в файлах раположенных в /etc/postgresql/10/main который надо поменять и поменяйте его
- + параметр data_directory
+ + параметр data_directory в postgresql.conf
 
 напишите что и почему поменяли
  + data_directory = '/mnt/data/14/main'
@@ -71,3 +71,15 @@
  + данные обнаружены
 
 задание со звездочкой *: не удаляя существующий GCE инстанс сделайте новый, поставьте на его PostgreSQL, удалите файлы с данными из /var/lib/postgres, перемонтируйте внешний диск который сделали ранее от первой виртуальной машины ко второй и запустите PostgreSQL на второй машине так чтобы он работал с данными на внешнем диске, расскажите как вы это сделали и что в итоге получилось.
+ + на первой машине выполнил sudo umount /mnt/data/
+ + отсоединил диск от первой машины
+ + подключил диск ко второй машине
+ + выполнил на второй машине:
+   - sudo mkdir -p /mnt/data
+   - sudo mount -o defaults /dev/vdb1 /mnt/data
+   - sudo chown -R postgres:postgres /mnt/data/
+   - отредактировал в postgresql.conf: data_directory = '/mnt/data/14/main'
+   - стартовал кластер sudo -u postgres pg_ctlcluster 14 main start
+   - зашел в psql: sudo -u postgres psql
+   - увидел данные в таблице test
+
