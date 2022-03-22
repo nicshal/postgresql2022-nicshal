@@ -21,18 +21,22 @@
 добавьте свеже-созданный диск к виртуальной машине - надо зайти в режим ее редактирования и дальше выбрать пункт attach existing disk
  + добавил - /dev/vdb
 
- NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+     NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 
- vda    252:0    0  15G  0 disk
+     vda    252:0    0  15G  0 disk
 
- ├─vda1 252:1    0   1M  0 part
+     ├─vda1 252:1    0   1M  0 part
 
- └─vda2 252:2    0  15G  0 part /
+     └─vda2 252:2    0  15G  0 part /
 
-  vdb    252:16   0   5G  0 disk
+      vdb    252:16   0   5G  0 disk
 
 
 проинициализируйте диск согласно инструкции и подмонтировать файловую систему, только не забывайте менять имя диска на актуальное, в вашем случае это скорее всего будет /dev/sdb - https://www.digitalocean.com/community/tutorials/how-to-partition-and-format-storage-devices-in-linux
+ + выполнено
+     Filesystem      Size  Used Avail Use% Mounted on
+     /dev/vda2        15G  3.1G   12G  22% /
+     /dev/vdb1       4.9G   20M  4.6G   1% /mnt/data
 
 сделайте пользователя postgres владельцем /mnt/data - chown -R postgres:postgres /mnt/data/
 
