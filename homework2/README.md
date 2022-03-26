@@ -2,6 +2,7 @@
 
 • сделать в GCE инстанс с Ubuntu 20.04
   + поставил
+
 • поставить на нем Docker Engine
   + поставил
     curl -fsSL https://get.docker.com -o get-docker.sh
