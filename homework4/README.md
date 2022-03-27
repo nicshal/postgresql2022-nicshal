@@ -110,39 +110,97 @@
      drop table t1;
 
 24 создайте ее заново но уже с явным указанием имени схемы testnm
+   + создал
+
+   create table testnm.t1(c1 int);
 
 25 вставьте строку со значением c1=1
+   + вставил
+
+     insert into testnm.t1(c1) values(1);
 
 26 зайдите под пользователем testread в базу данных testdb
+   + зашел
+
+     \c testdb testread
 
 27 сделайте select * from testnm.t1;
+   + сделал
 
 28 получилось?
+   + не получилось
 
 29 есть идеи почему? если нет - смотрите шпаргалку
+   + таблица новая, только что создана. А GRANT на схему выдали раньше, чем создали таблицу. И этот GRANT не действует на вновь созданные таблицы
 
 30 как сделать так чтобы такое больше не повторялось? если нет идей - смотрите шпаргалку
+   + сделал
+
+     \c testdb postgres;
+
+     alter default privileges in schema testnm grant select on tables to readonly;
 
 31 сделайте select * from testnm.t1;
+   + сделал
+
+     \c testdb testread;
+
+     select * from testnm.t1;
 
 32 получилось?
+   + не получилось
 
 33 есть идеи почему? если нет - смотрите шпаргалку
+   + alter default privileges действует для новых таблиц. GRANT вызывался до создания таблицы testnm.t1. Поэтомы текущая версия таблицы не попала под раздачу доступов
 
-31 сделайте select * from testnm.t1;
+   \c testdb postgres;
 
-32 получилось?
+   grant select on all tables in schema testnm to readonly;
 
-33 ура!
+   \c testdb testread;
 
-34 теперь попробуйте выполнить команду create table t2(c1 integer); insert into t2 values (2);
+34 сделайте select * from testnm.t1;
+   + сделал
 
-35 а как так? нам же никто прав на создание таблиц и insert в них под ролью readonly?
+35 получилось?
+   + получилось
 
-36 есть идеи как убрать эти права? если нет - смотрите шпаргалку
+36 ура!
+   + ура
 
-37 если вы справились сами то расскажите что сделали и почему, если смотрели шпаргалку - объясните что сделали и почему выполнив указанные в ней команды
+37 теперь попробуйте выполнить команду create table t2(c1 integer); insert into t2 values (2);
+   + попробовал - получилось
 
-38 теперь попробуйте выполнить команду create table t3(c1 integer); insert into t2 values (2);
+38 а как так? нам же никто прав на создание таблиц и insert в них под ролью readonly?
+   + создали таблицу в схеме public (из пути поиска). Все роли по умолчанию наследуют от роли public. А для роли public разрешено создание объектов в схеме public
 
-39 расскажите что получилось и почему
+39 есть идеи как убрать эти права? если нет - смотрите шпаргалку
+   + нужно ограничить роль public
+
+   \c testdb postgres;
+
+   revoke create on schema public from public;
+
+   revoke all on database testdb from public;
+
+   \c testdb testread;
+
+40 если вы справились сами то расскажите что сделали и почему, если смотрели шпаргалку - объясните что сделали и почему выполнив указанные в ней команды
+   + практически все сделал сам. Посмотрел в шпаргалку один раз (по alter default privileges)
+
+41 теперь попробуйте выполнить команду create table t3(c1 integer); insert into t2 values (2);
+   + выполнил
+
+42 расскажите что получилось и почему
+   + не получилось
+
+   testdb=> create table t3(c1 integer); insert into t3 values (2);
+
+   ERROR:  permission denied for schema public
+
+   LINE 1: create table t3(c1 integer);
+                     ^
+   ERROR:  relation "t3" does not exist
+
+   LINE 1: insert into t3 values (2);
+                    ^
