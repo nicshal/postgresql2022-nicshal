@@ -34,7 +34,7 @@
 8 создайте новую роль readonly
   + создал:
 
-    create role readonly;
+    create role readonly nologin;
 
 9 дайте новой роли право на подключение к базе данных testdb
   + выдал
@@ -53,8 +53,14 @@
 
 
 12 создайте пользователя testread с паролем test123
+   + создал
+
+     create user testread  with password 'test123';
 
 13 дайте роль readonly пользователю testread
+   + выдал
+
+     grant readonly to testread;
 
 14 зайдите под пользователем testread в базу данных testdb
 
