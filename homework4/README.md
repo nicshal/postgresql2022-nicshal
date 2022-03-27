@@ -8,27 +8,49 @@
 
 3 создайте новую базу данных testdb
   + сделал:
+
     create database testdb;
 
 4 зайдите в созданную базу данных под пользователем postgres
   + зашел:
+
     \c testdb
 
 5 создайте новую схему testnm
   + сделал:
+
     create schema testnm;
 
 6 создайте новую таблицу t1 с одной колонкой c1 типа integer
+  + сделал:
+
+    create table t1(c1 int);
 
 7 вставьте строку со значением c1=1
+  + вставил:
+
+    insert into t1(c1) values(1);
 
 8 создайте новую роль readonly
+  + создал:
+
+    create role readonly;
 
 9 дайте новой роли право на подключение к базе данных testdb
+  + выдал
+
+    grant connect on database testdb to readonly;
 
 10 дайте новой роли право на использование схемы testnm
+   + выдал:
+
+     grant usage on schema testnm to readonly;
 
 11 дайте новой роли право на select для всех таблиц схемы testnm
+   + выдал
+
+     grant select on all tables in schema testnm to readonly;
+
 
 12 создайте пользователя testread с паролем test123
 
