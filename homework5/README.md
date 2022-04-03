@@ -376,3 +376,5 @@
         initial connection time = 14.748 ms
 
         tps = 334.376815 (without initial connection time)
+
+    РАСПРЕДЕЛЕНИЕ tps ВЫРОВНЯЛОСЬ,  НО РЕЗКО СНИЗИЛАСЬ ПРОИЗВОДИТЕЛЬНОСТЬ (ПОЧТИ В ДВА РАЗА)
