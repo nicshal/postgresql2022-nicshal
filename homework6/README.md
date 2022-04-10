@@ -191,7 +191,7 @@
     sudo pg_ctlcluster 14 test_2 start;
 
 
-    ostgres=# select * from test_test;
+    postgres=# select * from test_test;
 
     WARNING:  page verification failed, calculated checksum 37268 but expected 42638
 
