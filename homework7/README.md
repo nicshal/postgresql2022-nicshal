@@ -142,6 +142,78 @@
 Воспроизведите взаимоблокировку трех транзакций. Можно ли разобраться в ситуации постфактум, изучая журнал сообщений?
   + сделал
 
+    - в первой сессии:
+
+      begin;
+
+      update test_7 set name = name || 'xxx'  where id = 1;
+
+      - во второй сессии:
+
+        begin;
+
+        update test_7 set name = name || 'xxx'  where id = 2;
+
+       - в третьей сессии:
+
+         begin;
+
+         update test_7 set name = name || 'xxx'  where id = 3;
+
+    - в первой сессии:
+
+      update test_7 set name = name || 'yyy'  where id = 2;
+
+      - во второй сессии:
+
+        update test_7 set name = name || 'yyy'  where id = 3;
+
+       - в третьей сессии:
+
+         update test_7 set name = name || 'yyy'  where id = 1;
+
+    В СЕССИИ ПОЛУЧИЛИ СООБЩЕНИЕ:
+
+    ERROR:  deadlock detected
+
+    DETAIL:  Process 1093 waits for ShareLock on transaction 2043156; blocked by process 756.
+
+    Process 756 waits for ShareLock on transaction 2043157; blocked by process 799.
+
+    Process 799 waits for ShareLock on transaction 2043158; blocked by process 1093.
+
+    HINT:  See server log for query details.
+
+    CONTEXT:  while updating tuple (0,21) in relation "test_7"
+
+    Делаем commit во всех сессиях
+
+    Смотрим логи sudo tail -n 10 /var/log/postgresql/postgresql-14-main.log
+
+    ВИДИМ:
+
+    2022-04-16 20:06:03.854 UTC [1093] postgres@postgres ERROR:  deadlock detected
+
+    2022-04-16 20:06:03.854 UTC [1093] postgres@postgres DETAIL:  Process 1093 waits for ShareLock on transaction 2043156; blocked by process 756.
+
+	         Process 756 waits for ShareLock on transaction 2043157; blocked by process 799.
+
+	         Process 799 waits for ShareLock on transaction 2043158; blocked by process 1093.
+
+	         Process 1093: update test_7 set name = name || 'yyy'  where id = 1;
+
+	         Process 756: update test_7 set name = name || 'yyy'  where id = 2;
+
+	         Process 799: update test_7 set name = name || 'yyy'  where id = 3;
+
+    2022-04-16 20:06:03.854 UTC [1093] postgres@postgres HINT:  See server log for query details.
+
+    2022-04-16 20:06:03.854 UTC [1093] postgres@postgres CONTEXT:  while updating tuple (0,21) in relation "test_7"
+
+
+    В ЖУРНАЛЕ ПРЕДСТАВЛЕНА ДОСТАТОЧНАЯ ИНФОРМАЦИЯ ДЛЯ РАЗБОРА ВОЗНИКШЕЙ СИТУАЦИИ
+
+
 Могут ли две транзакции, выполняющие единственную команду UPDATE одной и той же таблицы (без where), заблокировать друг друга?
   + сделал
 
