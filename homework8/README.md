@@ -18,11 +18,11 @@
       - Connections num: 100
       - Data Storage: ssd
 
-      Рекомендуемые                         По умолчанию
+      Рекомендуемые     -------------------------- По умолчанию
 
       max_connections = 100
 
-      shared_buffers = 1GB                       (128MB)
+      shared_buffers = 1GB  --------------------------(128MB)
 
       effective_cache_size = 3GB                 (4GB)
 
