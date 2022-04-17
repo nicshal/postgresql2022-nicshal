@@ -18,39 +18,39 @@
       - Connections num: 100
       - Data Storage: ssd
 
-      Рекомендуемые     -------------------------- По умолчанию
+      Рекомендуемые - (По умолчанию)
 
       max_connections = 100
 
-      shared_buffers = 1GB  --------------------------(128MB)
+      shared_buffers = 1GB  (128MB)
 
-      effective_cache_size = 3GB                 (4GB)
+      effective_cache_size = 3GB -               (4GB)
 
-      maintenance_work_mem = 256MB               (64MB)
+      maintenance_work_mem = 256MB -              (64MB)
 
       checkpoint_completion_target = 0.9
 
-      wal_buffers = 16MB                         (4MB)
+      wal_buffers = 16MB -                        (4MB)
 
       default_statistics_target = 100
 
-      random_page_cost = 1.1                     (4)
+      random_page_cost = 1.1 -                    (4)
 
-      effective_io_concurrency = 200             (1)
+      effective_io_concurrency = 200 -            (1)
 
-      work_mem = 10485kB                         (4MB)
+      work_mem = 10485kB  -                       (4MB)
 
-      min_wal_size = 2GB                         (80MB)
+      min_wal_size = 2GB -                        (80MB)
 
-      max_wal_size = 8GB                         (1GB)
+      max_wal_size = 8GB -                        (1GB)
 
-      max_worker_processes = 2                   (8)
+      max_worker_processes = 2 -                  (8)
 
-      max_parallel_workers_per_gather = 1        (2)
+      max_parallel_workers_per_gather = 1 -       (2)
 
-      max_parallel_workers = 2                   (8)
+      max_parallel_workers = 2 -                  (8)
 
-      max_parallel_maintenance_workers = 1       (2)
+      max_parallel_maintenance_workers = 1 -      (2)
 
 нагрузить кластер через утилиту
 https://github.com/Percona-Lab/sysbench-tpcc (требует установки
