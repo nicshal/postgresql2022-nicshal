@@ -1,7 +1,9 @@
 Описание/Пошаговая инструкция выполнения домашнего задания:
 
  - создал и стартовал несколько кластеров (сделал на одной виртуальной машине):
+
     pg_lsclusters
+
     Ver Cluster Port Status Owner    Data directory               Log file
     14  main    5432 online postgres /var/lib/postgresql/14/main  /var/log/postgresql/postgresql-14-main.log
     14  main2   5433 online postgres /var/lib/postgresql/14/main2 /var/log/postgresql/postgresql-14-main2.log
