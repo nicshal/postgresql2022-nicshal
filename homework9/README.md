@@ -1,6 +1,6 @@
 Описание/Пошаговая инструкция выполнения домашнего задания:
 
- - создал и стартовал несколько кластеров (сделал на одной виртуальной машине):
+  - создал и стартовал несколько кластеров (сделал на одной виртуальной машине):
 
     pg_lsclusters
 
@@ -14,6 +14,28 @@
 
 
 На 1 ВМ создаем таблицы test для записи, test2 для запросов на чтение.
+  - создал базу в кластере main2
+
+    postgres=# create database test_otus;
+    CREATE DATABASE
+
+  - перешел в базу test_otus и создал две таблицы:
+
+     postgres=# \c test_otus
+
+     You are now connected to database "test_otus" as user "postgres".
+
+     test_otus=# create table test(id int, name text);
+
+     CREATE TABLE
+
+     test_otus=# create table test2(id int, description text);
+
+     CREATE TABLE
+
+
+
+
 
 Создаем публикацию таблицы test и подписываемся на публикацию таблицы test2 с ВМ №2.
 
@@ -27,3 +49,17 @@
 Небольшое описание, того, что получилось.
 
 
+create function do_not_change()
+  returns trigger
+as
+$$
+begin
+  raise exception 'Cannot modify table.';
+end;
+$$
+language plpgsql;
+
+
+create trigger no_change_trigger
+  before insert or update or delete on "test2"
+  execute procedure do_not_change();
