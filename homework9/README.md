@@ -12,6 +12,7 @@
 
     14  main4   5435 online postgres /var/lib/postgresql/14/main4 /var/log/postgresql/postgresql-14-main4.log
 
+  -
 
 На 1 ВМ создаем таблицы test для записи, test2 для запросов на чтение.
   - создал базу в кластере main2
@@ -48,6 +49,31 @@
     before insert or update or delete on "test2"
     execute procedure do_not_change();
 
+  - добавил записи в test. Попробовал добавить записи в test2:
+
+    test_otus=# insert into test(id, name) values(1, 'test1'),(2, 'test2');
+
+    INSERT 0 2
+
+    test_otus=# select * from test;
+
+    id | name
+
+   ----+-------
+
+     1 | test1
+
+     2 | test2
+
+   (2 rows)
+
+   test_otus=# insert into test2(id, description) values(1, 'desc1'),(2, 'desc2');
+
+   ERROR:  Cannot modify table.
+
+   CONTEXT:  PL/pgSQL function do_not_change() line 3 at RAISE
+
+  -
 
 
 Создаем публикацию таблицы test и подписываемся на публикацию таблицы test2 с ВМ №2.
