@@ -208,10 +208,15 @@
   - из кластера main2 пытаемся обратиться к таблице test2:
 
     test_otus=# select * from test2;
+
       id | description
+
      ----+-------------
+
        1 | desc1
+
        2 | desc2
+
      (2 rows)
 
   - Данные видно. Логическая репликация настроена корректно
@@ -282,17 +287,27 @@
   - проверяем результат:
 
     test_otus=# select * from test2;
+
        id | description
+
       ----+-------------
+
         1 | desc1
+
         2 | desc2
+
       (2 rows)
 
     test_otus=# select * from test;
+
        id | name
+
       ----+-------
+
         1 | test1
+
         2 | test2
+
       (2 rows)
 
 
@@ -303,10 +318,4 @@
 Небольшое описание, того, что получилось.
 
 
-CREATE SUBSCRIPTION test_sub_main4
-CONNECTION 'host=localhost port=5433 user=postgres password=123456 dbname=test_otus'
-PUBLICATION test_pub WITH (copy_data = true);
 
-CREATE SUBSCRIPTION test2_sub_main4
-CONNECTION 'host=localhost port=5434 user=postgres password=123456 dbname=test_otus'
-PUBLICATION test2_pub WITH (copy_data = true);
