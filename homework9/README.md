@@ -57,21 +57,21 @@
 
     test_otus=# select * from test;
 
-    id | name
+      id | name
 
-   ----+-------
+     ----+-------
 
-     1 | test1
+       1 | test1
 
-     2 | test2
+       2 | test2
 
-   (2 rows)
+     (2 rows)
 
-   test_otus=# insert into test2(id, description) values(1, 'desc1'),(2, 'desc2');
+     test_otus=# insert into test2(id, description) values(1, 'desc1'),(2, 'desc2');
 
-   ERROR:  Cannot modify table.
+     ERROR:  Cannot modify table.
 
-   CONTEXT:  PL/pgSQL function do_not_change() line 3 at RAISE
+     CONTEXT:  PL/pgSQL function do_not_change() line 3 at RAISE
 
   -
 
