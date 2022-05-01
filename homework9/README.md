@@ -330,7 +330,6 @@
 
     wal_level
 
-    -----------
 
      replica
 
@@ -339,8 +338,6 @@
     test_otus=# show synchronous_commit;
 
     synchronous_commit
-
-    --------------------
 
      on
 
@@ -368,8 +365,6 @@
 
     hot_standby
 
-    -------------
-
      on
 
     (1 row)
@@ -377,8 +372,6 @@
     postgres=# show hot_standby_feedback;
 
     hot_standby_feedback
-
-    ----------------------
 
      off
 
@@ -388,8 +381,6 @@
     postgres=# show max_standby_streaming_delay;
 
     max_standby_streaming_delay
-
-    -----------------------------
 
     30s
 
