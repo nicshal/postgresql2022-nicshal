@@ -218,11 +218,95 @@
 
 
 3 ВМ использовать как реплику для чтения и бэкапов (подписаться на таблицы из ВМ №1 и №2 ).
+   создал базу в кластере main4
 
+    postgres=# create database test_otus;
+    CREATE DATABASE
+
+  - перешел в базу test_otus и создал две таблицы:
+
+     postgres=# \c test_otus
+
+     You are now connected to database "test_otus" as user "postgres".
+
+     test_otus=# create table test(id int, name text);
+
+     CREATE TABLE
+
+     test_otus=# create table test2(id int, description text);
+
+     CREATE TABLE
+
+  - создал триггер на таблицы test и test2 для предотвращения записи в эти таблицы:
+
+    create function do_not_change()
+    returns trigger
+    as
+    $$
+    begin
+      raise exception 'Cannot modify table.';
+    end;
+    $$
+    language plpgsql;
+
+    create trigger no_change_trigger
+    before insert or update or delete on "test"
+    execute procedure do_not_change();
+
+    create trigger no_change_trigger2
+    before insert or update or delete on "test2"
+    execute procedure do_not_change();
+
+  - делаем подписки на test и test2:
+
+    test_otus=# CREATE SUBSCRIPTION test_sub_main4
+
+    test_otus-# CONNECTION 'host=localhost port=5433 user=postgres password=123456 dbname=test_otus'
+
+    test_otus-# PUBLICATION test_pub WITH (copy_data = true);
+
+    NOTICE:  created replication slot "test_sub_main4" on publisher
+
+    CREATE SUBSCRIPTION
+
+    test_otus=# CREATE SUBSCRIPTION test2_sub_main4
+
+    test_otus-# CONNECTION 'host=localhost port=5434 user=postgres password=123456 dbname=test_otus'
+
+    test_otus-# PUBLICATION test2_pub WITH (copy_data = true);
+
+    NOTICE:  created replication slot "test2_sub_main4" on publisher
+
+    CREATE SUBSCRIPTION
+
+  - проверяем результат:
+
+    test_otus=# select * from test2;
+       id | description
+      ----+-------------
+        1 | desc1
+        2 | desc2
+      (2 rows)
+
+    test_otus=# select * from test;
+       id | name
+      ----+-------
+        1 | test1
+        2 | test2
+      (2 rows)
+
+
+  - Данные видно. Логическая репликация настроена корректно
+
+  _
 
 Небольшое описание, того, что получилось.
 
 
-CREATE SUBSCRIPTION test2_sub
+CREATE SUBSCRIPTION test_sub_main4
+CONNECTION 'host=localhost port=5433 user=postgres password=123456 dbname=test_otus'
+PUBLICATION test_pub WITH (copy_data = true);
+
+CREATE SUBSCRIPTION test2_sub_main4
 CONNECTION 'host=localhost port=5434 user=postgres password=123456 dbname=test_otus'
 PUBLICATION test2_pub WITH (copy_data = true);
