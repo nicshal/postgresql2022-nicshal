@@ -32,8 +32,21 @@
      test_otus=# create table test2(id int, description text);
 
      CREATE TABLE
+  - создал триггер на таблице test2 для предотвращения записи в эту таблицу:
 
+    create function do_not_change()
+    returns trigger
+    as
+    $$
+    begin
+      raise exception 'Cannot modify table.';
+    end;
+    $$
+    language plpgsql;
 
+    create trigger no_change_trigger
+    before insert or update or delete on "test2"
+    execute procedure do_not_change();
 
 
 
