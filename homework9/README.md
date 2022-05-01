@@ -160,6 +160,50 @@
   -
 
 Создаем публикацию таблицы test2 и подписываемся на публикацию таблицы test1 с ВМ №1.
+  - устанавливаем логическую репликацию, создаем публикацию таблицы test2, делаем подписку на test:
+
+    test_otus=# ALTER SYSTEM SET wal_level = logical;
+
+    ALTER SYSTEM
+
+    test_otus=# CREATE PUBLICATION test2_pub FOR TABLE test2;
+
+    WARNING:  wal_level is insufficient to publish logical changes
+
+    HINT:  Set wal_level to logical before creating subscriptions.
+
+    CREATE PUBLICATION
+
+    test_otus=# CREATE SUBSCRIPTION test_sub
+
+    test_otus-# CONNECTION 'host=localhost port=5433 user=postgres password=123456 dbname=test_otus'
+
+    test_otus-# PUBLICATION test_pub WITH (copy_data = true);
+
+    NOTICE:  created replication slot "test_sub" on publisher
+
+    CREATE SUBSCRIPTION
+
+
+  - рестартуем кластер
+
+     sudo pg_ctlcluster 14 main3 restart;
+
+  -
+
+Теперь делаем подписку из кластера main2 на таблицу test2 в кластере main3:
+  - делаем подписку:
+
+    test_otus=# CREATE SUBSCRIPTION test2_sub
+
+    CONNECTION 'host=localhost port=5434 user=postgres password=123456 dbname=test_otus'
+
+    PUBLICATION test2_pub WITH (copy_data = true);
+
+    NOTICE:  created replication slot "test2_sub" on publisher
+
+    CREATE SUBSCRIPTION
+
 
 3 ВМ использовать как реплику для чтения и бэкапов (подписаться на таблицы из ВМ №1 и №2 ).
 
