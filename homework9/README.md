@@ -320,4 +320,117 @@
   - При этом третий кластер main4 доступен только на чтение (некоторый аналог slave в схеме физической репликации)
 
 
+Задание со звездочкой*
+реализовать горячее реплицирование для высокой доступности на 4ВМ. Источником должна выступать ВМ №3. Написать с какими проблемами столкнулись.
+  - проверяем настройки на кластере main4:
+
+    test_otus=# ^C
+    test_otus=# show wal_level;
+    wal_level
+    -----------
+     replica
+    (1 row)
+
+    test_otus=# show synchronous_commit;
+    synchronous_commit
+    --------------------
+     on
+    (1 row)
+
+  - создаем еще один кластер:
+
+    sudo pg_createcluster -d /var/lib/postgresql/14/main5 14 main5;
+
+  - удалим файлы:
+
+     sudo rm -rf /var/lib/postgresql/14/main5
+
+  - сделаем бэкап с кластера main4:
+
+     sudo -u postgres pg_basebackup -p 5435 -R -D /var/lib/postgresql/14/main5
+
+  - стартуем кластер:
+
+     sudo pg_ctlcluster 14 main5 start
+
+  - проверяем настройки:
+
+    postgres=# show hot_standby;
+
+    hot_standby
+
+    -------------
+
+     on
+
+    (1 row)
+
+    postgres=# show hot_standby_feedback;
+
+    hot_standby_feedback
+
+    ----------------------
+
+     off
+
+    (1 row)
+
+
+    postgres=# show max_standby_streaming_delay;
+
+    max_standby_streaming_delay
+
+    -----------------------------
+
+    30s
+
+    (1 row)
+
+  - выставим меньшую задержку:
+
+    postgres=# ALTER SYSTEM SET max_standby_streaming_delay=10;
+
+    ALTER SYSTEM
+
+  - рестартуем кластер:
+
+    sudo pg_ctlcluster 14 main5 restart;
+
+  - смотрим данные:
+
+    postgres=# \c test_otus;
+
+    You are now connected to database "test_otus" as user "postgres".
+
+    test_otus=# select * from test;
+
+       id | name
+
+      ----+-------
+
+        1 | test1
+
+        2 | test2
+
+      (2 rows)
+
+    test_otus=# select * from test2;
+
+       id | description
+
+      ----+-------------
+
+        1 | desc1
+
+        2 | desc2
+
+      (2 rows)
+
+    - физическая репликация с кластера main4 на кластер main5 настроена успешно !!!
+
+
+
+
+
+
 
