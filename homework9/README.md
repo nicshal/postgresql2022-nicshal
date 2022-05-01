@@ -77,6 +77,25 @@
 
 
 Создаем публикацию таблицы test и подписываемся на публикацию таблицы test2 с ВМ №2.
+  - устанавливаем логическую репликацию и создаем публикацию таблицы test:
+
+    test_otus=# ALTER SYSTEM SET wal_level = logical;
+
+    ALTER SYSTEM
+
+    test_otus=# CREATE PUBLICATION test_pub FOR TABLE test;
+
+    WARNING:  wal_level is insufficient to publish logical changes
+
+    HINT:  Set wal_level to logical before creating subscriptions.
+
+    CREATE PUBLICATION
+
+  - рестартуем кластер
+
+     sudo pg_ctlcluster 14 main2 restart;
+
+  -
 
 На 2 ВМ создаем таблицы test2 для записи, test для запросов на чтение.
 
@@ -88,17 +107,6 @@
 Небольшое описание, того, что получилось.
 
 
-create function do_not_change()
-  returns trigger
-as
-$$
-begin
-  raise exception 'Cannot modify table.';
-end;
-$$
-language plpgsql;
-
-
-create trigger no_change_trigger
-  before insert or update or delete on "test2"
-  execute procedure do_not_change();
+CREATE SUBSCRIPTION test2_sub
+CONNECTION 'host=localhost port=5434 user=postgres password=123456 dbname=test_otus'
+PUBLICATION test2_pub WITH (copy_data = true);
