@@ -16,12 +16,19 @@
 
        - результат:
          Gather  (cost=1000.00..19215.58 rows=75 width=104) (actual time=0.244..88.647 rows=4 loops=1)
+
            Workers Planned: 2
+
            Workers Launched: 2
+
            ->  Parallel Seq Scan on tickets  (cost=0.00..18208.08 rows=31 width=104) (actual time=38.937..83.021 rows=1 loops=3)
+
                Filter: (passenger_name = 'DAMIR TIMOFEEV'::text)
+
                Rows Removed by Filter: 276356
+
          Planning Time: 0.064 ms
+
          Execution Time: 88.665 ms
 
      - создаем индекс
@@ -36,11 +43,17 @@
 
        - результат:
          Bitmap Heap Scan on tickets  (cost=5.01..289.41 rows=75 width=104) (actual time=0.040..0.065 rows=4 loops=1)
+
            Recheck Cond: (passenger_name = 'DAMIR TIMOFEEV'::text)
+
            Heap Blocks: exact=4
+
            ->  Bitmap Index Scan on bookings_passenger_name_idx  (cost=0.00..4.99 rows=75 width=0) (actual time=0.035..0.036 rows=4 loops=1)
+
                Index Cond: (passenger_name = 'DAMIR TIMOFEEV'::text)
+
          Planning Time: 0.217 ms
+
          Execution Time: 0.081 ms
 
 
