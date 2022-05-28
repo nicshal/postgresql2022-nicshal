@@ -56,23 +56,77 @@
 
          Execution Time: 0.081 ms
 
+  - создаем индекс для полнотекстового поиска
 
 
 
 
 
 
-  2.Прислать текстом результат команды explain, в которой используется данный индекс
 
-  3.Реализовать индекс для полнотекстового поиска
 
-  4.Реализовать индекс на часть таблицы или индекс на поле с функцией
 
-  5.Создать индекс на несколько полей
 
-  6.Написать комментарии к каждому из индексов
+  - создаем индекс на часть таблицы
 
-  7.Описать что и как делали и с какими проблемами столкнулись
+    - делаем запрос (индекса нет)
+      explain analyse
+
+      select flight_no from bookings.flights where status = 'On Time';
+
+    - результат
+
+        Seq Scan on flights  (cost=0.00..1612.80 rows=530 width=7) (actual time=0.008..6.663 rows=518 loops=1)
+
+          Filter: ((status)::text = 'On Time'::text)
+
+          Rows Removed by Filter: 65146
+
+        Planning Time: 0.085 ms
+
+        Execution Time: 6.699 ms
+
+    - делаем индекс create index flights_flight_no_idx on bookings.flights(flight_no) where status = 'On Time';
+
+    - повторяем запрос
+      explain analyse
+
+      select flight_no from bookings.flights where status = 'On Time';
+
+    - результат - видим использование индекса
+
+        Index Only Scan using flights_flight_no_idx on flights  (cost=0.28..24.16 rows=530 width=7) (actual time=0.027..0.070 rows=518 loops=1)
+
+          Heap Fetches: 0
+
+        Planning Time: 0.201 ms
+
+        Execution Time: 0.096 ms
+
+    - повторяем запрос (подбираем условин мимо индекса)
+      explain analyse
+
+      select flight_no from bookings.flights where status = 'Arrived';
+
+    - результат - индекс не используется
+
+      Seq Scan on flights  (cost=0.00..1612.80 rows=49364 width=7) (actual time=0.011..8.343 rows=49235 loops=1)
+
+        Filter: ((status)::text = 'Arrived'::text)
+
+        Rows Removed by Filter: 16429
+
+      Planning Time: 0.082 ms
+
+      Execution Time: 9.869 ms
+
+
+
+
+
+  - создаем индекс на несколько полей
+
+
 
 2 вариант: В результате выполнения ДЗ вы научитесь пользоваться различными вариантами соединения таблиц.
 
