@@ -126,6 +126,48 @@
 
   - создаем индекс на несколько полей
 
+    - запрос без индекса
+      explain analyse
+
+      select flight_no from bookings.flights where departure_airport = 'DME' and arrival_airport = 'LED';
+
+    - результат
+
+      Seq Scan on flights  (cost=0.00..1776.96 rows=378 width=7) (actual time=0.007..6.216 rows=484 loops=1)
+
+        Filter: ((departure_airport = 'DME'::bpchar) AND (arrival_airport = 'LED'::bpchar))
+
+        Rows Removed by Filter: 65180
+
+      Planning Time: 0.101 ms
+
+      Execution Time: 6.245 ms
+
+    - делаем индекс create index flights_airport_idx on bookings.flights(departure_airport, arrival_airport);
+
+    - повторяем запрос
+      explain analyse
+
+      select flight_no from bookings.flights where departure_airport = 'DME' and arrival_airport = 'LED';
+
+    - результат - видим использование индекса
+
+      Bitmap Heap Scan on flights  (cost=8.17..667.23 rows=378 width=7) (actual time=0.042..0.096 rows=484 loops=1)
+
+        Recheck Cond: ((departure_airport = 'DME'::bpchar) AND (arrival_airport = 'LED'::bpchar))
+
+        Heap Blocks: exact=7
+
+        ->  Bitmap Index Scan on flights_airport_idx  (cost=0.00..8.07 rows=378 width=0) (actual time=0.034..0.034 rows=484 loops=1)
+
+            Index Cond: ((departure_airport = 'DME'::bpchar) AND (arrival_airport = 'LED'::bpchar))
+
+      Planning Time: 0.214 ms
+
+      Execution Time: 0.125 ms
+
+
+
 
 
 2 вариант: В результате выполнения ДЗ вы научитесь пользоваться различными вариантами соединения таблиц.
