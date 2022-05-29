@@ -58,14 +58,93 @@
 
   - создаем индекс для полнотекстового поиска
 
+    - запрос без индекса
+      explain analyse
 
+      select * from bookings.tickets where passenger_name @@ 'TIMOFEEV';
 
+    - результат
+      Gather  (cost=1000.00..105472.93 rows=7669 width=104) (actual time=2.902..2780.377 rows=3065 loops=1)
 
+        Workers Planned: 2
 
+        Workers Launched: 2
 
+        ->  Parallel Seq Scan on tickets  (cost=0.00..103706.03 rows=3195 width=104) (actual time=6.982..2754.754 rows=1022 loops=3)
 
+            Filter: (passenger_name @@ 'TIMOFEEV'::text)
 
+            Rows Removed by Filter: 275335
 
+      Planning Time: 0.829 ms
+
+      JIT:
+
+        Functions: 6
+
+        Options: Inlining false, Optimization false, Expressions true, Deforming true
+
+        Timing: Generation 1.288 ms, Inlining 0.000 ms, Optimization 1.177 ms, Emission 17.209 ms, Total 19.674 ms
+
+      Execution Time: 2781.034 ms
+
+    - еще один запрос без индекса
+      explain analyse
+
+      select * from bookings.tickets where passenger_name like '%TIMOFEEV';
+
+    - результат
+
+      Gather  (cost=1000.00..19974.98 rows=7669 width=104) (actual time=0.234..134.319 rows=3065 loops=1)
+
+        Workers Planned: 2
+
+        Workers Launched: 2
+
+          ->  Parallel Seq Scan on tickets  (cost=0.00..18208.08 rows=3195 width=104) (actual time=0.143..113.523 rows=1022 loops=3)
+
+              Filter: (passenger_name ~~ '%TIMOFEEV'::text)
+
+              Rows Removed by Filter: 275335
+
+      Planning Time: 0.081 ms
+
+      Execution Time: 134.581 ms
+
+    - создаем gin-индекс
+
+      - подключаем расширения
+
+        CREATE EXTENSION pg_trgm;
+
+        CREATE EXTENSION btree_gin;
+
+      - создаем новое поле в таблице, заполняем его значениями, делаем gin-индекс по новому полю
+
+        alter table bookings.tickets add column name_tsv tsvector;
+
+        update bookings.tickets set name_tsv = to_tsvector(passenger_name);
+
+        create index bookings_passenger_name_git_idx on bookings.tickets using gin(name_tsv);
+
+      - повторяем запрос
+        explain analyse
+
+        select * from bookings.tickets where name_tsv @@ 'TIMOFEEV';
+
+      - результат - видим использование индекса и значительное уменьшение времени выполнения запроса
+
+        Bitmap Heap Scan on tickets  (cost=16.43..230.23 rows=55 width=140) (actual time=0.011..0.011 rows=0 loops=1)
+
+          Recheck Cond: (name_tsv @@ '''TIMOFEEV'''::tsquery)
+
+          ->  Bitmap Index Scan on bookings_passenger_name_git_idx  (cost=0.00..16.41 rows=55 width=0) (actual time=0.010..0.010 rows=0 loops=1)
+
+                Index Cond: (name_tsv @@ '''TIMOFEEV'''::tsquery)
+
+        Planning Time: 0.091 ms
+
+        Execution Time: 0.032 ms
 
   - создаем индекс на часть таблицы
 
@@ -120,10 +199,6 @@
 
       Execution Time: 9.869 ms
 
-
-
-
-
   - создаем индекс на несколько полей
 
     - запрос без индекса
@@ -167,7 +242,8 @@
       Execution Time: 0.125 ms
 
 
-
+  -
+  -
 
 
 2 вариант: В результате выполнения ДЗ вы научитесь пользоваться различными вариантами соединения таблиц.
