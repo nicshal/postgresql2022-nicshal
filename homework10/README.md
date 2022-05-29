@@ -248,7 +248,7 @@
 
 2 вариант: В результате выполнения ДЗ вы научитесь пользоваться различными вариантами соединения таблиц.
 
-  - для проведения экспериментов предварительно удалил ограничение foreign key на таблице bookings.tickets и удалил несколько записей из таблицы bookings.bookings
+  - для проведения экспериментов предварительно удалил ограничение foreign key на таблицах bookings.tickets и bookings.ticket_flights  . Также удалил несколько записей из таблиц bookings.tickets и bookings.bookings
 
   - прямое соединение таблиц - отбираем номера билетов, по которым есть бронирование
     select ticket_no
@@ -279,7 +279,17 @@
 
     cross join bookings.aircrafts_data b;
 
-  - полное соединение двух таблиц
+  - полное соединение двух таблиц - определяем билеты без бронирования и бронирования без билетов
+
+    select t.ticket_no, b.book_ref
+
+    from bookings.tickets t
+
+    full join bookings.bookings b
+
+    on t.book_ref = b.book_ref
+
+    where t.ticket_no is null or b.book_ref is null;
 
   - запрос с разными типами соединений - выводим имена аэропортов, по которым отсутствует подтверждения бронирования
 
