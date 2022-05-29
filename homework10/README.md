@@ -275,8 +275,29 @@
 
   4.Реализовать полное соединение двух или более таблиц
 
-  5.Реализовать запрос, в котором будут использованы разные типы соединений
+  - запрос с разными типами соединений - выводим имена аэропортов, по которым отсутствует подтверждения бронирования
 
-  6.Сделать комментарии на каждый запрос
+    select a.airport_name, count(*)
 
-  7.К работе приложить структуру таблиц, для которых выполнялись соединения
+    from bookings.tickets t
+
+    left join bookings.bookings b
+
+    on t.book_ref = b.book_ref
+
+    inner join bookings.boarding_passes p
+
+    on p.ticket_no = t.ticket_no
+
+    inner join bookings.flights f
+
+    on f.flight_id = p.flight_id
+
+    inner join bookings.airports_data a
+
+    on a.airport_code = f.arrival_airport
+
+    where b.book_ref is null
+
+    group by 1;
+
