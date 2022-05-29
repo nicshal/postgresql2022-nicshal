@@ -15,6 +15,7 @@
        select * from bookings.tickets where passenger_name = 'DAMIR TIMOFEEV';
 
        - результат:
+
          Gather  (cost=1000.00..19215.58 rows=75 width=104) (actual time=0.244..88.647 rows=4 loops=1)
 
            Workers Planned: 2
@@ -42,6 +43,7 @@
        select * from bookings.tickets where passenger_name = 'DAMIR TIMOFEEV';
 
        - результат:
+
          Bitmap Heap Scan on tickets  (cost=5.01..289.41 rows=75 width=104) (actual time=0.040..0.065 rows=4 loops=1)
 
            Recheck Cond: (passenger_name = 'DAMIR TIMOFEEV'::text)
@@ -59,11 +61,13 @@
   - создаем индекс для полнотекстового поиска
 
     - запрос без индекса
+
       explain analyse
 
       select * from bookings.tickets where passenger_name @@ 'TIMOFEEV';
 
     - результат
+
       Gather  (cost=1000.00..105472.93 rows=7669 width=104) (actual time=2.902..2780.377 rows=3065 loops=1)
 
         Workers Planned: 2
@@ -89,6 +93,7 @@
       Execution Time: 2781.034 ms
 
     - еще один запрос без индекса
+
       explain analyse
 
       select * from bookings.tickets where passenger_name like '%TIMOFEEV';
@@ -128,6 +133,7 @@
         create index bookings_passenger_name_git_idx on bookings.tickets using gin(name_tsv);
 
       - повторяем запрос
+
         explain analyse
 
         select * from bookings.tickets where name_tsv @@ 'TIMOFEEV';
@@ -149,6 +155,7 @@
   - создаем индекс на часть таблицы
 
     - делаем запрос (индекса нет)
+
       explain analyse
 
       select flight_no from bookings.flights where status = 'On Time';
@@ -168,6 +175,7 @@
     - делаем индекс create index flights_flight_no_idx on bookings.flights(flight_no) where status = 'On Time';
 
     - повторяем запрос
+
       explain analyse
 
       select flight_no from bookings.flights where status = 'On Time';
@@ -183,6 +191,7 @@
         Execution Time: 0.096 ms
 
     - повторяем запрос (подбираем условин мимо индекса)
+
       explain analyse
 
       select flight_no from bookings.flights where status = 'Arrived';
@@ -202,6 +211,7 @@
   - создаем индекс на несколько полей
 
     - запрос без индекса
+
       explain analyse
 
       select flight_no from bookings.flights where departure_airport = 'DME' and arrival_airport = 'LED';
@@ -221,6 +231,7 @@
     - делаем индекс create index flights_airport_idx on bookings.flights(departure_airport, arrival_airport);
 
     - повторяем запрос
+
       explain analyse
 
       select flight_no from bookings.flights where departure_airport = 'DME' and arrival_airport = 'LED';
@@ -251,6 +262,7 @@
   - для проведения экспериментов предварительно удалил ограничение foreign key на таблицах bookings.tickets и bookings.ticket_flights  . Также удалил несколько записей из таблиц bookings.tickets и bookings.bookings
 
   - прямое соединение таблиц - отбираем номера билетов, по которым есть бронирование
+
     select ticket_no
 
     from bookings.tickets t
