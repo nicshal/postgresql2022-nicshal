@@ -15,13 +15,9 @@
  -- Создал триггерную функцию:
 
         CREATE OR REPLACE FUNCTION pract_functions.tf_change_sales_qty()
-
         RETURNS trigger
-
         AS
-
         $$
-
         DECLARE
 
         BEGIN
@@ -29,21 +25,15 @@
             IF TG_LEVEL = 'ROW' THEN
 
                 DELETE FROM pract_functions.good_sum_mart
-
                 WHERE good_name = (SELECT good_name
                                    FROM pract_functions.goods
                                    WHERE goods_id = CASE WHEN TG_OP = 'DELETE' THEN old.good_id ELSE new.good_id END);
 
                 INSERT INTO pract_functions.good_sum_mart(good_name, sum_sale)
-
                 SELECT g.good_name, sum(g.good_price * s.sales_qty)
-
                 FROM pract_functions.goods g
-
                 INNER JOIN pract_functions.sales s ON s.good_id = g.goods_id
-
                 WHERE s.good_id = case when TG_OP = 'DELETE' then old.good_id else new.good_id end
-
                 GROUP BY G.good_name;
 
             END IF;
@@ -57,11 +47,7 @@
     -- создал триггер:
 
         CREATE TRIGGER trg_after_sales
-
         AFTER INSERT OR UPDATE OR DELETE
-
         ON pract_functions.sales
-
         FOR EACH ROW
-
         EXECUTE FUNCTION pract_functions.tf_change_sales_qty();
