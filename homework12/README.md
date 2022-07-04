@@ -30,7 +30,9 @@
 
                 DELETE FROM pract_functions.good_sum_mart
 
-                WHERE good_name = (SELECT good_name FROM pract_functions.goods WHERE goods_id = CASE WHEN TG_OP = 'DELETE' THEN old.good_id ELSE new.good_id END);
+                WHERE good_name = (SELECT good_name
+                                   FROM pract_functions.goods
+                                   WHERE goods_id = CASE WHEN TG_OP = 'DELETE' THEN old.good_id ELSE new.good_id END);
 
                 INSERT INTO pract_functions.good_sum_mart(good_name, sum_sale)
 
